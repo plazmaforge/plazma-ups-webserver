@@ -2,8 +2,7 @@ package com.ohapon.webserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class RequestParser {
 
@@ -31,7 +30,19 @@ public class RequestParser {
             path = "/index.html";
         }
 
-        // TODO: parse headers
+        if (lines.length > 1) {
+            Map<String, String> headers = new LinkedHashMap<>();
+            line = null;
+            for (int i = 1; i < lines.length; i++) {
+
+                line = lines[i];
+                elements = line.split(" ");
+                if (elements.length > 1) {
+                    headers.put(elements[0], elements[1]);
+                }
+            }
+            request.setHeaders(headers);
+        }
 
         request.setUri(path);
         return request;
@@ -47,7 +58,11 @@ public class RequestParser {
     }
 
     protected HttpMethod findHttpMethod(String name) {
-        return HttpMethod.valueOf(name);
+        try {
+            return HttpMethod.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
 
