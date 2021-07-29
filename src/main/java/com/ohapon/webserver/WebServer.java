@@ -42,7 +42,7 @@ public class WebServer {
         }
 
         isStarting = true;
-        contentReader = new ContentReader(getWebAppDir());
+        contentReader = new ContentReader(webAppPath);
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
 
@@ -69,16 +69,10 @@ public class WebServer {
         isStarting = false;
     }
 
-    protected String getWebAppDir() {
-        // TODO: For test only
-        //if (webAppPath == null) {
-        //    webAppPath = System.getProperty("user.dir") + "/" + "src/test/resources/WebApp";
-        //}
-        return webAppPath;
-    }
-
     public static void main(String[] args) {
         WebServer server = new WebServer();
+        server.setPort(3000);
+        server.setWebAppPath(System.getProperty("user.dir") + "/" + "src/test/resources/WebApp");
         try {
             server.start();
         } catch (IOException e) {
