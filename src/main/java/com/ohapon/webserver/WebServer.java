@@ -71,9 +71,9 @@ public class WebServer {
 
     protected String getWebAppDir() {
         // TODO: For test only
-        if (webAppPath == null) {
-            webAppPath = System.getProperty("user.dir") + "/" + "src/test/resources/WebApp";
-        }
+        //if (webAppPath == null) {
+        //    webAppPath = System.getProperty("user.dir") + "/" + "src/test/resources/WebApp";
+        //}
         return webAppPath;
     }
 

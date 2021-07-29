@@ -45,24 +45,15 @@ public class RequestHandler {
 
     protected void writeResponse(BufferedWriter writer, Response response) throws IOException {
 
+        ResponseWriter responseWriter = new ResponseWriter(contentReader);
+
         if (response.getHttpStatus() != HttpStatus.OK) {
-            handleStatus(writer, response.getHttpStatus());
+            responseWriter.writeErrorResponse(writer, response.getHttpStatus());
             return;
         }
 
-        String fileContent = contentReader.readContent(response.getContent());
+        responseWriter.writeResponse(writer, response);
 
-        // write response
-        handleStatus(writer, HttpStatus.OK);
-        writer.newLine();
-        writer.newLine();
-
-        writer.write(fileContent);
-
-    }
-
-    protected void handleStatus(BufferedWriter writer, HttpStatus status) throws IOException {
-        writer.write("HTTP/1.1 " + status.getCode() + " " + status.getName());
     }
 
 }
