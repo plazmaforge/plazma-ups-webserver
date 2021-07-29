@@ -1,8 +1,6 @@
 package com.ohapon.webserver;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 
 public class RequestHandler {
 
@@ -20,19 +18,39 @@ public class RequestHandler {
 
         RequestParser requestParser = new RequestParser();
         Request request = requestParser.parseRequest(reader);
+        Response response = createResponse(request);
+
+        writeResponse(writer, response);
+
+    }
+
+    protected Response createResponse(Request request) {
+        Response response = new Response();
+
         if (request.getHttpMethod() == null || request.getUri() == null) {
-            handleStatus(writer, HttpStatus.BAD_REQUEST);
-            return;
+            response.setHttpStatus(HttpStatus.BAD_REQUEST);
+            return response;
         }
 
         String path = request.getUri();
-        String fileContent = null;
         try {
-            fileContent = contentReader.readContent(path);
+            InputStream is = contentReader.readContent(path);
+            response.setContent(is);
+            response.setHttpStatus(HttpStatus.OK);
         } catch (IOException e) {
-            handleStatus(writer, HttpStatus.NOT_FOUND);
+            response.setHttpStatus(HttpStatus.NOT_FOUND);
+        }
+        return response;
+    }
+
+    protected void writeResponse(BufferedWriter writer, Response response) throws IOException {
+
+        if (response.getHttpStatus() != HttpStatus.OK) {
+            handleStatus(writer, response.getHttpStatus());
             return;
         }
+
+        String fileContent = contentReader.readContent(response.getContent());
 
         // write response
         handleStatus(writer, HttpStatus.OK);

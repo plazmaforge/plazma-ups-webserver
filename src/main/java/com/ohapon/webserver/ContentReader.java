@@ -1,9 +1,6 @@
 package com.ohapon.webserver;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class ContentReader {
 
@@ -13,14 +10,13 @@ public class ContentReader {
         this.pathToWebApp = pathToWebApp;
     }
 
-    public String readContent(String uri) throws IOException {
+    public InputStream readContent(String uri) throws IOException {
         String fileName = toFileName(uri);
-        String content = readFileContent(fileName);
-        return content;
+        return new FileInputStream(fileName);
     }
 
-    protected String readFileContent(String fileName) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
+    protected String readContent(InputStream is) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             StringBuilder builder = new StringBuilder();
             String line = null;
             while ((line = reader.readLine()) != null) {
