@@ -9,7 +9,7 @@ public class WebServer {
     private static final int DEFAULT_PORT = 3000;
     private int port;
     private String webAppPath;
-    private boolean processing;
+    private boolean isStarting;
     private ContentReader contentReader;
 
     public WebServer() {
@@ -37,22 +37,24 @@ public class WebServer {
     }
 
     public void start() throws IOException {
-        if (processing) {
+        if (isStarting) {
             throw new RuntimeException("Server is started");
         }
 
-        processing = true;
+        isStarting = true;
+        contentReader = new ContentReader(getWebAppDir());
 
-        try (ServerSocket serverSocket = new ServerSocket(3000)) {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
 
             System.out.println("WebServer: Start");
-            while (processing) {
+            while (isStarting) {
 
                 try (Socket socket = serverSocket.accept();
                      BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                      BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
 
-                    handle(reader, writer);
+                    RequestHandler handler = new RequestHandler(reader, writer, contentReader);
+                    handler.handle();
 
                 }
 
@@ -64,13 +66,7 @@ public class WebServer {
     }
 
     public void stop() {
-        processing = false;
-    }
-
-    protected void handle(BufferedReader reader, BufferedWriter writer) throws IOException {
-        RequestHandler handler = new RequestHandler(reader, writer, getContentReader());
-        handler.handle();
-
+        isStarting = false;
     }
 
     protected String getWebAppDir() {
@@ -79,13 +75,6 @@ public class WebServer {
             webAppPath = System.getProperty("user.dir") + "/" + "src/test/resources/WebApp";
         }
         return webAppPath;
-    }
-
-    protected ContentReader getContentReader() {
-        if (contentReader == null) {
-            contentReader = new ContentReader(getWebAppDir());
-        }
-        return contentReader;
     }
 
     public static void main(String[] args) {
