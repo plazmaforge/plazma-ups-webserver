@@ -1,4 +1,4 @@
-package com.ohapon.webserver;
+package plazma.ups.webserver;
 
 public enum HttpStatus {
     OK(200, "OK"),

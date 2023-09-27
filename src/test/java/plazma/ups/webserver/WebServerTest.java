@@ -1,9 +1,8 @@
-package com.ohapon.webserver;
+package plazma.ups.webserver;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import plazma.ups.webserver.WebServer;
 
-import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
